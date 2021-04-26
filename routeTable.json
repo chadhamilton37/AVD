@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "routeTableName": {
+            "type": "string"
+        },
+        "disableBgpRoutePropagation": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "routeName": {
+            "type": "string"
+        },
+        "routeAddressPrefix": {
+            "type": "string"
+        },
+        "nextHopType": {
+            "type": "string"
+        },
+        "hasBgpOverride": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "existingVnetName": {
+            "type": "string"
+        },
+        "existingSubnetName": {
+            "type": "string"
+        },
+        "subnetAddressPrefix": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('routeTableName')]",
+            "location": "southcentralus",
+            "properties": {
+                "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]",
+                "routes": [
+                    {
+                        "name": "[parameters('routeName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('routeAddressPrefix')]",
+                            "nextHopType": "[parameters('nextHopType')]",
+                            "hasBgpOverride": "[parameters('hasBgpOverride')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-07-01",
+            "name": "[concat(parameters('existingVnetName'), '/', parameters('existingSubnetName'))]",
+            "dependson": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                "routeTable": {
+                    "id": "[resourceId('Microsoft.Network/routeTables',parameters('routeTableName'))]"
+                }
+            }
+        }
+    ]
+}

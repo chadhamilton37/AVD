@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "routeTableName": {
+            "value": ""
+        },
+        "disableBgpRoutePropagation": {
+            "value": false
+        },
+        "routeName": {
+            "value": ""
+        },
+        "routeAddressPrefix": {
+            "value": "WindowsVirtualDesktop"
+        },
+        "nextHopType": {
+            "value": "Internet"
+        },
+        "hasBgpOverride": {
+            "value": false
+        },
+        "existingVnetName": {
+            "value": ""
+        },
+        "existingSubnetName": {
+            "value": ""
+        },
+        "subnetAddressPrefix": {
+            "value": ""
+        }
+    }
+}
