@@ -1,7 +1,7 @@
 # WVD ARM Templates and Scripts
 
 ## Route Table
-The ability to use [service tags](https://docs.microsoft.com/en-us/azure/virtual-network/service-tags-overview) in route tables is now in [public preview](https://azure.microsoft.com/en-us/updates/public-preview-service-tags-for-user-defined-routing/). The new capability can reduce communication problems between WVD session hosts and the WVD service by allowing service traffic to bypass NVAs and proxies by using the WindowsVirtualDesktop service tag.
+The ability to use [service tags](https://docs.microsoft.com/en-us/azure/virtual-network/service-tags-overview) in route tables is now in [public preview](https://azure.microsoft.com/en-us/updates/public-preview-service-tags-for-user-defined-routing/). The new capability can reduce communication problems between WVD session hosts and the WVD service by allowing service traffic to bypass NVAs and proxies through use of the WindowsVirtualDesktop service tag.
 
 ### *Template*
 The template and parameters file contained in the "routeTable" will achieve the following:
