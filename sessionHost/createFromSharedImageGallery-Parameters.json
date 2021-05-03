@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_12-15-2020.zip"
+        },
+        "rdshPrefix": {
+            "value": ""
+        },
+        "rdshNumberOfInstances": {
+            "value": 
+        },
+        "rdshVmSize": {
+            "value": ""
+        },
+        "enableAcceleratedNetworking": {
+            "value": 
+        },
+        "domainAdministratorAccountUsername": {
+            "value": ""
+        },
+        "domainAdministratorAccountPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": ""
+                },
+                "secretName": ""
+            }
+        },
+        "subnet-id": {
+            "value": ""
+        },
+        "networkInterfaceTags": {
+            "value": {}
+        },
+        "virtualMachineTags": {
+            "value": {}
+        },
+        "vmInitialNumber": {
+            "value": 
+        },
+        "hostpoolToken": {
+            "value": ""
+        },
+        "hostpoolName": {
+            "value": ""
+        },
+        "ouPath": {
+            "value": ""
+        },
+        "domain": {
+            "value": ""
+        },
+        "imageId": {
+            "value": ""
+        }
+    }
+}

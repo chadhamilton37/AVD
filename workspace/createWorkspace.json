@@ -1,0 +1,92 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "wvdWorkspaceName": {
+            "type": "string"
+        },
+        "workspaceDescription": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]"
+        },
+        "friendlyName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "appGroups": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "apiVersion": {
+            "type": "string",
+            "defaultValue": "2019-12-10-preview",
+            "metadata": {
+                "description": "WVD api version"
+            }
+        },
+        "settingName": {
+            "type": "String",
+            "defaultValue": "WVDInsights",
+            "metadata": {
+                "description": "The name of the diagnostic setting"
+            }
+        },
+        "logAnalyticsWorkspaceId": {
+            "type": "String",
+            "metadata": {
+                "description": "ResourceID of the Log Analytics workspace in which resource logs should be saved."
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('wvdWorkspaceName')]",
+            "apiVersion": "[parameters('apiVersion')]",
+            "type": "Microsoft.DesktopVirtualization/workspaces",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "friendlyName": "[parameters('friendlyName')]",
+                "description": "[parameters('workspaceDescription')]",
+                "applicationGroupReferences": "[parameters('appGroups')]"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/workspaces/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('wvdWorkspaceName'),'/Microsoft.Insights/', parameters('settingName'))]",
+            "dependson": [
+                "[resourceId('Microsoft.DesktopVirtualization/workspaces', parameters('wvdWorkspaceName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                    {
+                        "category": "Checkpoint",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Error",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Management",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Feed",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,169 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hostpoolName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Hostpool to be created."
+            }
+        },
+        "hostpoolFriendlyName": {
+            "type": "string",
+            "metadata": {
+                "description": "The friendly name of the Hostpool to be created."
+            },
+            "defaultValue": ""
+        },
+        "hostpoolDescription": {
+            "type": "string",
+            "metadata": {
+                "description": "The description of the Hostpool to be created."
+            },
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location where the resources will be deployed."
+            },
+            "defaultValue": "[resourceGroup().location]"
+        },
+        "hostpoolType": {
+            "type": "string",
+            "allowedValues": [
+                "Personal",
+                "Pooled"
+            ],
+            "metadata": {
+                "description": "Set this parameter to Personal if you would like to enable Persistent Desktop experience. Defaults to false."
+            }
+        },
+        "personalDesktopAssignmentType": {
+            "type": "string",
+            "allowedValues": [
+                "Automatic",
+                "Direct",
+                ""
+            ],
+            "metadata": {
+                "description": "Set the type of assignment for a Personal hostpool type"
+            },
+            "defaultValue": ""
+        },
+        "maxSessionLimit": {
+            "type": "int",
+            "metadata": {
+                "description": "Maximum number of sessions."
+            },
+            "defaultValue": 99999
+        },
+        "loadBalancerType": {
+            "type": "string",
+            "allowedValues": [
+                "BreadthFirst",
+                "DepthFirst",
+                "Persistent"
+            ],
+            "metadata": {
+                "description": "Type of load balancer algorithm."
+            },
+            "defaultValue": "BreadthFirst"
+        },
+        "customRdpProperty": {
+            "type": "string",
+            "metadata": {
+                "description": "Hostpool rdp properties"
+            },
+            "defaultValue": ""
+        },
+        "hostpoolTags": {
+            "type": "object",
+            "metadata": {
+                "description": "The tags to be assigned to the hostpool"
+            },
+            "defaultValue": {}
+        },
+        "apiVersion": {
+            "type": "string",
+            "defaultValue": "2019-12-10-preview",
+            "metadata": {
+                "description": "WVD api version"
+            }
+            
+        },
+        "validationEnvironment": {
+            "type": "bool",
+            "metadata": {
+                "description": "Whether to use validation enviroment."
+            },
+            "defaultValue": false
+        },
+        "settingName": {
+            "type": "String",
+            "defaultValue": "WVDInsights",
+            "metadata": {
+                "description": "The name of the diagnostic setting"
+            }
+        },
+        "logAnalyticsWorkspaceId": {
+            "type": "String",
+            "metadata": {
+                "description": "ResourceID of the Log Analytics workspace in which resource logs should be saved."
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('hostpoolName')]",
+            "apiVersion": "[parameters('apiVersion')]",
+            "type": "Microsoft.DesktopVirtualization/hostpools",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('hostpoolTags')]",
+            "properties": {
+                "friendlyName": "[parameters('hostpoolFriendlyName')]",
+                "description": "[parameters('hostpoolDescription')]",
+                "hostpoolType": "[parameters('hostpoolType')]",
+                "customRdpProperty": "[parameters('customRdpProperty')]",
+                "personalDesktopAssignmentType": "[parameters('personalDesktopAssignmentType')]",
+                "maxSessionLimit": "[parameters('maxSessionLimit')]",
+                "loadBalancerType": "[parameters('loadBalancerType')]",
+                "validationEnvironment": "[parameters('validationEnvironment')]",
+                "ring": null
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/hostpools/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('hostpoolName'),'/Microsoft.Insights/', parameters('settingName'))]",
+            "dependson": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpoolName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                    {
+                        "category": "Checkpoint",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Error",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Management",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Connection",
+                        "enabled": true
+                    },
+                    {
+                        "category": "HostRegistration",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    ]
+}
