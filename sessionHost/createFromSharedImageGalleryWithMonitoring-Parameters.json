@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_12-15-2020.zip"
+        },
+        "rdshPrefix": {
+            "value": ""
+        },
+        "rdshNumberOfInstances": {
+            "value": 
+        },
+        "rdshVmSize": {
+            "value": ""
+        },
+        "enableAcceleratedNetworking": {
+            "value": 
+        },
+        "domainAdministratorAccountUsername": {
+            "value": ""
+        },
+        "domainAdministratorAccountPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/'Your Subscription ID'/resourceGroups/'Your Key Vault Resource Group'/providers/Microsoft.KeyVault/vaults/'Your Key Vault Name'"
+                },
+                "secretName": ""
+            }
+        },
+        "subnet-id": {
+            "value": "/subscriptions/'Your Subscription ID'/resourceGroups/'Your Vnet Resource Group'/providers/Microsoft.Network/virtualNetworks/'Your Vnet Name'/subnets/'Your Subnet Name'"
+        },
+        "vmInitialNumber": {
+            "value": 
+        },
+        "hostpoolToken": {
+            "value": ""
+        },
+        "hostpoolName": {
+            "value": ""
+        },
+        "ouPath": {
+            "value": ""
+        },
+        "domain": {
+            "value": ""
+        },
+        "imageId": {
+            "value": "/subscriptions/'Your Subscription ID'/resourceGroups/'Your Image Resource Group'/providers/Microsoft.Compute/galleries/'Your Shared Image Gallery Name'/images/'Your Image Definition Name'"
+        },
+        "mmaInstallTemplate":{
+            "value": "https://raw.githubusercontent.com/chadhamilton37/Monitoring/main/existingVM/mmaExtension.json"
+        },
+        "guestHealthInstallTemplate":{
+            "value": "https://raw.githubusercontent.com/chadhamilton37/Monitoring/main/existingVM/guestHealthExtension.json"
+        },
+        "logAnalyticsWorkspaceId": {
+            "value": "/subscriptions/'Your Subscription ID'/resourcegroups/'Your Log Analytics Workspace Resource Group'/providers/microsoft.operationalinsights/workspaces/'Your Log Analytics Workspace Name'"
+        },
+        "healthDataCollectionRuleResourceId": {
+            "value": "/subscriptions/'Your Subscription ID'/resourceGroups/'Your WVD VM Resource Group'/providers/Microsoft.Insights/dataCollectionRules/'Your Data Collection Rule Name'"
+        }
+    }
+}
