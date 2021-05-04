@@ -277,6 +277,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
             "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')), 'MmaInstall')]",
+            "dependsOn": [
+                "rdsh-dsc-loop"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -300,6 +303,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
             "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')),'GuestHealthInstall')]",
+            "dependsOn": [
+                "rdsh-mmaInstall-loop"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
