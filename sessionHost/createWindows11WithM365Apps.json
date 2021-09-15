@@ -132,10 +132,6 @@
         "imageSku": {
             "type": "string"
         },
-        "encryptionAtHost": {
-            "type": "bool",
-            "defaultValue": false
-        },
         "securityType": {
             "type": "string",
             "defaultValue": "TrustedLaunch"
@@ -216,7 +212,6 @@
                     }
                 },
                 "securityProfile": {
-                    "encryptionAtHost": "[parameters('encryptionAtHost')]",
                     "securityType": "[parameters('securityType')]",
                     "uefiSettings": {
                         "secureBootEnabled": "[parameters('secureBootEnabled')]",
