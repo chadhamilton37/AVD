@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_5-5-2021.zip"
+        },
+        "rdshPrefix": {
+            "value": "vmavd"
+        },
+        "rdshNumberOfInstances": {
+            "value": 1
+        },
+        "rdshVmSize": {
+            "value": "Standard_NV12s_v3"
+        },
+        "enableAcceleratedNetworking": {
+            "value": true
+        },
+        "domainAdministratorAccountUsername": {
+            "value": "chamilton@corp.mclemoreluong.com"
+        },
+        "domainAdministratorAccountPassword": {
+            "value": "CMHlmj02"
+        },
+        "subnet-id": {
+            "value": "/subscriptions/512af7f9-c0e4-47d3-a8d3-392a9ca21a4a/resourceGroups/rg-networking-01/providers/Microsoft.Network/virtualNetworks/vnet-avd-01/subnets/snet-avd"
+        },
+        "networkInterfaceTags": {
+            "value": {}
+        },
+        "virtualMachineTags": {
+            "value": {}
+        },
+        "vmInitialNumber": {
+            "value": 1
+        },
+        "hostpoolToken": {
+            "value": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3NkE4Q0I1MTQwNjkyM0E4MkU4QUQ3MUYzQjE4NzEyN0Y2OTRDOTkiLCJ0eXAiOiJKV1QifQ.eyJSZWdpc3RyYXRpb25JZCI6IjYwODE4ZWI2LTIxYTEtNDc2Ni1hYjY3LTQ2OTllZjU4ZWRiZSIsIkJyb2tlclVyaSI6Imh0dHBzOi8vcmRicm9rZXItZy11cy1yMC53dmQubWljcm9zb2Z0LmNvbS8iLCJEaWFnbm9zdGljc1VyaSI6Imh0dHBzOi8vcmRkaWFnbm9zdGljcy1nLXVzLXIwLnd2ZC5taWNyb3NvZnQuY29tLyIsIkVuZHBvaW50UG9vbElkIjoiMmFiYThkODAtZDFjYy00NTMxLTk5NjgtNjhmZWEyZGI0NjY1IiwiR2xvYmFsQnJva2VyVXJpIjoiaHR0cHM6Ly9yZGJyb2tlci53dmQubWljcm9zb2Z0LmNvbS8iLCJHZW9ncmFwaHkiOiJVUyIsIm5iZiI6MTYyNDY1MDM2MiwiZXhwIjoxNjI0NjgwMDAwLCJpc3MiOiJSREluZnJhVG9rZW5NYW5hZ2VyIiwiYXVkIjoiUkRtaSJ9.o89ssBCgQzpe_AmSnl3O1G2KJKs9uvGSxIETL3_-i8yojWSefaptBj96Czk2ZOWpufEu5lYDayUJC7uqrb_OEpoDpn7p2V_PL5I3Pch21h3VNgq23WxO3ONnd0bC_NDHVAw1cKIopVdNUPZ_z46upn7s48pZVrI2OUijBrs9m0lTuliwEy_JIXKg6iTEZl7WHQWiTiV143yKqDSm-JlSOsoVobu_1UjZ1n1UkCmBxoqSoTkvgc16304EpkGdKv1mTaPhyOVRqsUpUjecmOfaYzclhM9G4wwNxyGxDSg_go5-tmyZoSaSU0fp0UwLMEjk0WUKwXul4E5AYHvTqqnvkQ"
+        },
+        "hostpoolName": {
+            "value": "hp-gpu01"
+        },
+        "ouPath": {
+            "value": ""
+        },
+        "domain": {
+            "value": "corp.mclemoreluong.com"
+        },
+        "imagepublisher": {
+            "value": "microsoftwindowsdesktop"
+        },
+        "imageoffer": {
+            "value": "office-365"
+        },
+        "imagesku": {
+            "value": "21h1-evd-o365pp"
+        },
+        "osDiskSize": {
+            "value": 1024
+        }
+    }
+}

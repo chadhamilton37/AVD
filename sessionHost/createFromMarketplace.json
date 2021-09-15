@@ -1,0 +1,279 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "artifactsLocation": {
+            "defaultValue": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip",
+            "type": "String",
+            "metadata": {
+                "description": "The base URI where artifacts required by this template are located."
+            }
+        },
+        "rdshPrefix": {
+            "defaultValue": "[take(toLower(resourceGroup().name),10)]",
+            "type": "String",
+            "metadata": {
+                "description": "This prefix will be used in combination with the VM number to create the VM name. This value includes the dash, so if using “rdsh” as the prefix, VMs would be named “rdsh-0”, “rdsh-1”, etc. You should use a unique prefix to reduce name collisions in Active Directory."
+            }
+        },
+        "rdshNumberOfInstances": {
+            "defaultValue": 1,
+            "type": "Int",
+            "metadata": {
+                "description": "Number of session hosts that will be created and added to the hostpool."
+            }
+        },
+        "rdshVMDiskType": {
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "StandardSSD_LRS",
+                "Standard_LRS"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "The VM disk type for the VM: HDD or SSD."
+            }
+        },
+        "osDiskSize": {
+            "type": "int"
+        },
+        "rdshVmSize": {
+            "type": "String",
+            "metadata": {
+                "description": "The size of the session host VMs."
+            }
+        },
+        "enableAcceleratedNetworking": {
+            "defaultValue": false,
+            "type": "Bool",
+            "metadata": {
+                "description": "Enables Accelerated Networking feature, notice that VM size must support it, this is supported in most of general purpose and compute-optimized instances with 2 or more vCPUs, on instances that supports hyperthreading it is required minimum of 4 vCPUs."
+            }
+        },
+        "domainAdministratorAccountUsername": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The username for the account with domain join privelages."
+            }
+        },
+        "domainAdministratorAccountPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "The password that corresponds to the domain username."
+            }
+        },
+        "subnet-id": {
+            "type": "String",
+            "metadata": {
+                "description": "The unique id of the subnet for the nics."
+            }
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Location for all resources to be created in."
+            }
+        },
+        "networkInterfaceTags": {
+            "defaultValue": {},
+            "type": "Object",
+            "metadata": {
+                "description": "The tags to be assigned to the network interfaces"
+            }
+        },
+        "virtualMachineTags": {
+            "defaultValue": {},
+            "type": "Object",
+            "metadata": {
+                "description": "The tags to be assigned to the virtual machines"
+            }
+        },
+        "vmInitialNumber": {
+            "defaultValue": 1,
+            "type": "Int",
+            "metadata": {
+                "description": "VM name prefix initial number."
+            }
+        },
+        "hostpoolToken": {
+            "type": "String",
+            "metadata": {
+                "description": "The token for adding VMs to the hostpool"
+            }
+        },
+        "hostpoolName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the hostpool"
+            }
+        },
+        "ouPath": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "OUPath for the domain join"
+            }
+        },
+        "domain": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "FQDN of domain to join"
+            }
+        },
+        "imagepublisher": {
+            "type": "string"
+        },
+        "imageOffer": {
+            "type": "string"
+        },
+        "imageSku": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "existingDomainUsername": "[first(split(parameters('domainAdministratorAccountUsername'), '@'))]",
+        "domain": "[if(equals(parameters('domain'), ''), last(split(parameters('domainAdministratorAccountUsername'), '@')), parameters('domain'))]",
+        "storageAccountType": "[parameters('rdshVMDiskType')]",
+        "vmSize": "[parameters('rdshVmSize')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2020-05-01",
+            "name": "[concat('nic-', parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')))]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('networkInterfaceTags')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[parameters('subnet-id')]"
+                            }
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
+            },
+            "copy": {
+                "name": "rdsh-nic-loop",
+                "count": "[parameters('rdshNumberOfInstances')]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', 'nic-', parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')))]"
+            ],
+            "tags": "[parameters('virtualMachineTags')]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')))]",
+                    "adminUsername": "[variables('existingDomainUsername')]",
+                    "adminPassword": "[parameters('domainAdministratorAccountPassword')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "diskSizeGB": "[parameters('osDiskSize')]",
+                        "name": "[concat('osdisk-', parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')))]",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('storageAccountType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "[parameters('imagePublisher')]",
+                        "offer": "[parameters('imageOffer')]",
+                        "sku": "[parameters('imageSku')]",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('nic-', parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber'))))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+                    }
+                },
+                "licenseType": "Windows_Client"
+            },
+            "copy": {
+                "name": "rdsh-vm-loop",
+                "count": "[parameters('rdshNumberOfInstances')]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')), '/', 'joindomain')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "rdsh-vm-loop"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "name": "[variables('domain')]",
+                    "ouPath": "[parameters('ouPath')]",
+                    "user": "[parameters('domainAdministratorAccountUsername')]",
+                    "restart": "true",
+                    "options": "3"
+                },
+                "protectedSettings": {
+                    "password": "[parameters('domainAdministratorAccountPassword')]"
+                }
+            },
+            "copy": {
+                "name": "rdsh-domain-join-loop",
+                "count": "[parameters('rdshNumberOfInstances')]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')), '/', 'dscextension')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "rdsh-domain-join-loop"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.73",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "modulesUrl": "[parameters('artifactsLocation')]",
+                    "configurationFunction": "Configuration.ps1\\AddSessionHost",
+                    "properties": {
+                        "hostPoolName": "[parameters('hostpoolName')]",
+                        "registrationInfoToken": "[parameters('hostpoolToken')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "rdsh-dsc-loop",
+                "count": "[parameters('rdshNumberOfInstances')]"
+            }
+        }
+    ],
+    "outputs": {}
+}
